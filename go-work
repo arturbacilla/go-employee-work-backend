@@ -1,0 +1,9 @@
+#!/bin/bash
+
+main() {
+    if [[ "$1" == "start" ]]; then
+        docker compose up
+    fi
+}
+
+main "$@"
