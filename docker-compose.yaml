@@ -1,4 +1,13 @@
 services:
+  backend:
+    container_name: backend_go
+    build: .
+    profiles: [backend]
+    ports:
+      - 3000:3000
+    restart: unless-stopped
+    depends_on: 
+      - database
   database:
     container_name: postgres_go_work
     image: "postgres:latest"
@@ -22,3 +31,4 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+
