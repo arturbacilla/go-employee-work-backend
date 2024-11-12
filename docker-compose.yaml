@@ -1,25 +1,24 @@
 services:
- database:
-  container_name: postgres_go_work
-  image: 'postgres:latest'
-  profiles: [db]
-  ports:
-    - 5432:5432
-  env_file:
-    - .env
-  environment:
-    POSTGRES_USER: '${POSTGRES_USER}'
-    POSTGRES_PASSWORD: '${POSTGRES_PASSWORD}'
-    POSTGRES_DB: '${POSTGRES_DB}'
-    PGUSER: '${POSTGRES_USER}'
-  restart: unless-stopped
-  volumes:
-    - ./.database/data:/var/lib/postgresql/data/
-    - ./.database/scripts:/docker-entrypoint-initdb.d
-  shm_size: 128mb
-  healthcheck:
-    test: ["CMD-SHELL", "pg_isready", "-d", "$${POSTGRES_DB}", "-U", "$${POSTGRES_USER}"]
-    interval: 5s
-    timeout: 5s
-    retries: 5
-    
+  database:
+    container_name: postgres_go_work
+    image: "postgres:latest"
+    profiles: [db]
+    ports:
+      - 5432:5432
+    env_file:
+      - ./.env
+    environment:
+      POSTGRES_USER: "${POSTGRES_USER}"
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+      POSTGRES_DB: "${POSTGRES_DB}"
+      PGUSER: "${POSTGRES_USER}"
+    restart: unless-stopped
+    volumes:
+      - ./.database/data:/var/lib/postgresql/data/
+      - ./.database/scripts:/docker-entrypoint-initdb.d
+    shm_size: 128mb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d ${POSTGRES_DB} -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
