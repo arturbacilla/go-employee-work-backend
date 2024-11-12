@@ -1,3 +1,3 @@
 .env
-database/data
+.database/data
 .vscode/
