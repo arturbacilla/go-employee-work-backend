@@ -5,3 +5,4 @@ go-work
 docker-compose.yaml
 Dockerfile
 main
+.env

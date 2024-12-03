@@ -1,15 +1,18 @@
 services:
   backend:
-    container_name: backend_go
+    container_name: go_employee_work_backend
     build: .
     profiles: [backend]
     ports:
-      - 3000:3000
+      - ${PORT}:${PORT}
     restart: unless-stopped
     depends_on: 
       - database
+    env_file:
+      - ./.env
+      
   database:
-    container_name: postgres_go_work
+    container_name: go_employee_work_postgres
     image: "postgres:latest"
     profiles: [db]
     ports:
