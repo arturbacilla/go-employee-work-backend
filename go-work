@@ -2,7 +2,7 @@
 
 main() {
     if [[ "$1" == "start" ]]; then
-        docker compose up
+        docker compose --profile "*" up
     fi
 }
 

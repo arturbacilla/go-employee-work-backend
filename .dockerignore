@@ -1,0 +1,7 @@
+.collections/
+.database/
+.vscode/
+go-work
+docker-compose.yaml
+Dockerfile
+main
