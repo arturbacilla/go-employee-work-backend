@@ -1,0 +1,14 @@
+{
+  "version": "1",
+  "name": "Go-Work-Employee",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "scripts": {
+    "filesystemAccess": {
+      "allow": true
+    }
+  }
+}
