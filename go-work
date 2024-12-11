@@ -1,9 +1,37 @@
 #!/bin/bash
 
+# shellcheck disable=SC1091
+source ./scripts/go-work-helpers.sh
+
 main() {
-    if [[ "$1" == "start" ]]; then
-        docker compose --profile "*" up
+    if [[ -z "$1" ]]; then
+        Help
     fi
+
+    while getopts "sh-:" option; do
+        case "${option}" in
+        -)
+            case "${OPTARG}" in
+            start) Start ;;
+            dev-install) DevInstall ;;
+            help) Help ;;
+            *)
+                if [ "$OPTERR" = 1 ] && [ "${OPTARG:0:1}" != ":" ]; then MsgError "Invalid argument: ${RED}--${OPTARG}${NC}" >&2 && return 0; fi
+                ;;
+            esac
+            ;;
+        s) Start ;;
+        h)
+            Help
+            ;;
+        \?)
+            MsgError "Invalid parameter. Use one of:"
+            Help
+            exit 0
+            ;;
+        esac
+    done
+
 }
 
 main "$@"
