@@ -1,16 +1,22 @@
 #!/bin/bash
 
 unamestr=$(uname)
-if [ "$unamestr" = 'Linux' ]; then
+if [ "$unamestr" = 'Linux' ] || [[ "$unamestr" == *"W64"* ]]; then
 
     # shellcheck disable=SC2046
     export $(grep -v '^#' .env | xargs -d '\n')
 
-else
+elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'Darwin' ]; then
 
     # shellcheck disable=SC2046
     export $(grep -v '^#' .env | xargs -0)
-
+else
+    # For Windows (MINGW64 and similar)
+    while IFS= read -r line; do
+        [[ "$line" =~ ^# ]] && continue
+        # shellcheck disable=SC2163
+        export "$line"
+    done <.env
 fi
 
 export GOOSE_DRIVER=postgres
