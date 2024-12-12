@@ -6,7 +6,7 @@ if [ "$unamestr" = 'Linux' ]; then
     # shellcheck disable=SC2046
     export $(grep -v '^#' .env | xargs -d '\n')
 
-elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'Darwin' ]; then
+else
 
     # shellcheck disable=SC2046
     export $(grep -v '^#' .env | xargs -0)
