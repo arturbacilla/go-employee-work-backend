@@ -1,26 +1,23 @@
 package main
 
 import (
+	"arturbacilla/go-employee-work-backend/config"
+	database "arturbacilla/go-employee-work-backend/initializers"
 	"fmt"
-	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 
 	"internal/messages"
 )
 
+func init() {
+	config.LoadConfig()
+	database.ConnectToDB()
+}
+
 func main() {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		messages.MsgError(fmt.Sprintf("%s", err))
-	}
-
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = "3001"
-		messages.MsgWarn("No ports been set on environment variables. Using default port 3001")
+	if config.AppConfig == nil {
+		messages.MsgError("Config not initialized")
 	}
 
 	server := gin.Default()
@@ -31,6 +28,6 @@ func main() {
 		})
 	})
 
-	server.Run(fmt.Sprintf(":%s", port))
+	server.Run(fmt.Sprintf(":%s", config.AppConfig.PORT))
 
 }
