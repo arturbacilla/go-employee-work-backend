@@ -8,17 +8,25 @@ main() {
         Help
     fi
 
-    while getopts "sh-:" option; do
+    while getopts "shm:-:" option; do
         case "${option}" in
         -)
             case "${OPTARG}" in
             start) Start ;;
             dev-install) DevInstall ;;
+            migrations)
+                shift $((OPTIND - 2))
+                Migrations "$@"
+                ;;
             help) Help ;;
             *)
                 if [ "$OPTERR" = 1 ] && [ "${OPTARG:0:1}" != ":" ]; then MsgError "Invalid argument: ${RED}--${OPTARG}${NC}" >&2 && return 0; fi
                 ;;
             esac
+            ;;
+        m)
+            shift $((OPTIND - 2))
+            Migrations "$@"
             ;;
         s) Start ;;
         h)

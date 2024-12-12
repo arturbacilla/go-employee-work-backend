@@ -1,5 +1,19 @@
 #!/bin/bash
 
+unamestr=$(uname)
+if [ "$unamestr" = 'Linux' ]; then
+
+    # shellcheck disable=SC2046
+    export $(grep -v '^#' .env | xargs -d '\n')
+
+elif [ "$unamestr" = 'FreeBSD' ] || [ "$unamestr" = 'Darwin' ]; then
+
+    # shellcheck disable=SC2046
+    export $(grep -v '^#' .env | xargs -0)
+
+fi
+
+export GOOSE_DRIVER=postgres
 #-----Códigos ANSI para cores no terminal-------
 
 export TAB='\t'
@@ -70,6 +84,14 @@ Help() {
     echo -e "Usage: ${GREEN}./go-work${NC} [OPTIONS]"
     echo -e "Options: ${RED}*${NC} are mandatory parameters"
     echo -e "${TAB}${YELLOW}-s, --start${NC}${TAB}Start the application using all docker profiles"
+    echo
+    echo -e "${TAB}${YELLOW}-m, --migration${NC} ${RED}[options]${NC}${TAB}Manage migrations using goose"
+    echo -e "${X3TAB}${RED}create <name>*${NC}${TAB}Create a new migration"
+    echo -e "${X3TAB}${RED}up${NC}${X2TAB}Run migrations up to the last"
+    echo -e "${X3TAB}${RED}down${NC}${X2TAB}Rollback the last migration"
+    echo -e "${X3TAB}${RED}reset${NC}${X2TAB}Rollback all migrations"
+    echo -e "${X3TAB}${RED}fix${NC}${X2TAB}Apply sequential ordering to migrations"
+    echo -e "${X3TAB}${RED}validate${NC}${TAB}Check migration files without running them"
     echo
     echo -e "${TAB}${YELLOW}--dev-install${NC}${TAB}Install dev dependencies to work on this repository (goose, lefthook)."
     echo
@@ -145,4 +167,37 @@ DevInstall() {
 
 Start() {
     docker compose --profile "*" up
+}
+
+Migrations() {
+    acceptedArgs=("create" "up" "down" "reset" "fix" "validate" "status")
+    currDir="$PWD"
+    export GOOSE_MIGRATION_DIR="$currDir/.database/migrations"
+
+    if [[ -z "$POSTGRES_USER" ]] || [[ -z "$POSTGRES_DB" ]] || [[ -z "$POSTGRES_PASSWORD" ]]; then
+        MsgError "Invalid .env file. It should contain the following variables: ${RED}POSTGRES_USER, POSTGRES_DB${NC} and ${RED}POSTGRES_PASSWORD${NC}"
+        exit 1
+    fi
+    export GOOSE_DBSTRING="user=$POSTGRES_USER dbname=$POSTGRES_DB sslmode=disable"
+
+    if [[ -z "$1" || ! " ${acceptedArgs[*]} " =~ $1 ]]; then
+        MsgError "Invalid or missing argument for migrations. Accepted arguments are: ${RED}${acceptedArgs[*]}${NC}"
+        exit 1
+    fi
+
+    case "${1}" in
+    create)
+        if [[ -z "$2" ]]; then
+            MsgError "You should input a name for the new migration."
+            exit 1
+        fi
+        goose create "$2" go
+        ;;
+    up) goose up ;;
+    down) goose down ;;
+    reset) goose reset ;;
+    fix) goose fix ;;
+    validate) goose validate ;;
+    status) goose status ;;
+    esac
 }
